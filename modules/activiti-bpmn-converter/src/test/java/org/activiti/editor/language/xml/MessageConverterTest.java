@@ -23,6 +23,7 @@ public class MessageConverterTest extends AbstractConverterTest {
   }
   
   private void validateModel(BpmnModel model) {
+
     Message message = model.getMessage("Examples:writeReportId");
     assertNotNull(message);
     assertEquals("Examples:writeReportItem", message.getItemRef());
