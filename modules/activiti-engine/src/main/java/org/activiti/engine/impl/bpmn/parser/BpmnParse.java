@@ -140,7 +140,8 @@ public class BpmnParse implements BpmnXMLConstants {
   protected Map<String, ItemDefinition> itemDefinitions = new HashMap<String, ItemDefinition>();
   protected Map<String, BpmnInterface> bpmnInterfaces = new HashMap<String, BpmnInterface>();
   protected Map<String, Operation> operations = new HashMap<String, Operation>();
-  protected Map<String, XMLImporter> importers = new HashMap<String, XMLImporter>();
+
+    protected Map<String, XMLImporter> importers;
   protected Map<String, String> prefixs = new HashMap<String, String>();
 
   // Factories
@@ -156,6 +157,7 @@ public class BpmnParse implements BpmnXMLConstants {
     this.activityBehaviorFactory = parser.getActivityBehaviorFactory();
     this.listenerFactory = parser.getListenerFactory();
     this.bpmnParserHandlers = parser.getBpmnParserHandlers();
+        this.importers = parser.getImporters();
     this.initializeXSDItemDefinitions();
   }
 
@@ -315,17 +317,6 @@ public class BpmnParse implements BpmnXMLConstants {
     if (this.importers.containsKey(theImport.getImportType())) {
       return this.importers.get(theImport.getImportType());
     } else {
-      if (theImport.getImportType().equals("http://schemas.xmlsoap.org/wsdl/")) {
-        Class< ? > wsdlImporterClass;
-        try {
-          wsdlImporterClass = Class.forName("org.activiti.engine.impl.webservice.CxfWSDLImporter", true, Thread.currentThread().getContextClassLoader());
-          XMLImporter newInstance = (XMLImporter) wsdlImporterClass.newInstance();
-          this.importers.put(theImport.getImportType(), newInstance);
-          return newInstance;
-        } catch (Exception e) {
-          throw new ActivitiException("Could not find importer for type " + theImport.getImportType());
-        }
-      }
       return null;
     }
   }

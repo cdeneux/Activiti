@@ -10,27 +10,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.activiti.engine.impl.bpmn.parser;
+
+package org.activiti.engine.test.bpmn.parse.implementation;
 
 import org.activiti.bpmn.model.Import;
+import org.activiti.engine.impl.bpmn.parser.BpmnParse;
+import org.activiti.engine.impl.bpmn.parser.XMLImporter;
 
 /**
- * A XML importer
+ * A mock implementation of an importer.
  * 
- * @author Esteban Robles Luna
+ * @author Christophe DENEUX - Linagora
+ * 
  */
-public interface XMLImporter {
+public class CustomImporter implements XMLImporter {
 
-    /**
-     * @return The import type that the importer is able to import
-     */
-    public String getImportType();
+    @Override
+    public String getImportType() {
+        return "http://foo.bar.com/my-own-format";
+    }
 
-  /**
-   * Imports the definitions in the XML declared in element
-   * 
-   * @param element the declarations to be imported
-   * @param parse the parse who called this importer
-   */
-  void importFrom(Import theImport, BpmnParse parse);
+    @Override
+    public void importFrom(Import theImport, BpmnParse parse) {
+        // NOP
+    }
+
 }

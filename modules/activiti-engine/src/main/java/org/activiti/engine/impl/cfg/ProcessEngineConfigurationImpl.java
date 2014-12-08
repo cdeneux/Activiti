@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,6 +66,7 @@ import org.activiti.engine.impl.bpmn.data.ItemInstance;
 import org.activiti.engine.impl.bpmn.deployer.BpmnDeployer;
 import org.activiti.engine.impl.bpmn.parser.BpmnParseHandlers;
 import org.activiti.engine.impl.bpmn.parser.BpmnParser;
+import org.activiti.engine.impl.bpmn.parser.XMLImporter;
 import org.activiti.engine.impl.bpmn.parser.factory.AbstractBehaviorFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.DefaultActivityBehaviorFactory;
@@ -330,6 +332,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected ActivityBehaviorFactory activityBehaviorFactory;
   protected ListenerFactory listenerFactory;
   protected BpmnParseFactory bpmnParseFactory;
+
+    protected Map<String, XMLImporter> importers;
   
   // PROCESS VALIDATION 
   
@@ -419,6 +423,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // init /////////////////////////////////////////////////////////////////////
   
   protected void init() {
+        loadImporters();
   	initConfigurators();
   	configuratorsBeforeInit();
     initProcessDiagramGenerator();
@@ -1011,6 +1016,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     bpmnParser.setBpmnParseFactory(bpmnParseFactory);
     bpmnParser.setActivityBehaviorFactory(activityBehaviorFactory);
     bpmnParser.setListenerFactory(listenerFactory);
+        bpmnParser.setImporters(importers);
     
     List<BpmnParseHandler> parseHandlers = new ArrayList<BpmnParseHandler>();
     if(getPreBpmnParseHandlers() != null) {
@@ -2082,5 +2088,33 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 		this.enableDatabaseEventLogging = enableDatabaseEventLogging;
     return this;
 	}
+
+    /**
+     * Load importers available into the current classloader
+     */
+    protected void loadImporters() {
+
+        this.importers = new HashMap<String, XMLImporter>();
+
+        final ServiceLoader<XMLImporter> importersLoader = ServiceLoader.load(XMLImporter.class);
+        final Iterator<XMLImporter> importersIterator = importersLoader.iterator();
+        while (importersIterator.hasNext()) {
+            final XMLImporter importer = importersIterator.next();
+
+            final String importType = importer.getImportType();
+            if (importType != null) {
+                if (this.importers.containsKey(importType)) {
+                    // Importer already registered
+                    log.error("Trying to register another importer for the import type'" + importType + "'. Ignored.");
+                } else {
+                    this.importers.put(importType.toLowerCase(), importer);
+                    log.debug("An importer is registered for the type '" + importType + "'.");
+                }
+            } else {
+                // It's a bug: the method XMLImporter.getImportType() of the importer returns 'null'.
+                log.error("Trying to register an importer for which the type is null. Ignored.");
+            }
+        }
+    }
 	
 }
