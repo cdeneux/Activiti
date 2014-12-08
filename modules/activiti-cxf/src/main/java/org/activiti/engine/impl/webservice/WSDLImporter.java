@@ -31,12 +31,9 @@ import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
-<<<<<<< HEAD
-=======
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
->>>>>>> Rework XML parsing of WSDLImporter using the J2SE standard way instead
 
 import org.activiti.bpmn.model.Import;
 import org.activiti.engine.ActivitiException;
