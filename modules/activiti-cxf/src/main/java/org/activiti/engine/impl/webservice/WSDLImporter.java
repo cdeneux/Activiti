@@ -76,6 +76,11 @@ public class WSDLImporter implements XMLImporter {
   public WSDLImporter() {
     this.namespace = "";
   }
+  
+  @Override
+  public String getImportType() {
+      return "http://schemas.xmlsoap.org/wsdl/";
+  }
 
   @Override
   public String getImportType() {
