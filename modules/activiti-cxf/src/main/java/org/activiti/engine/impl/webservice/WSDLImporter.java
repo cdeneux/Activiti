@@ -31,6 +31,7 @@ import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.activiti.bpmn.model.Import;
 import org.activiti.engine.ActivitiException;
@@ -73,6 +74,11 @@ public class WSDLImporter implements XMLImporter {
   
   public WSDLImporter() {
     this.namespace = "";
+  }
+  
+  @Override
+  public String getImportType() {
+      return "http://schemas.xmlsoap.org/wsdl/";
   }
 
   public void importFrom(Import theImport, BpmnParse parse) {
