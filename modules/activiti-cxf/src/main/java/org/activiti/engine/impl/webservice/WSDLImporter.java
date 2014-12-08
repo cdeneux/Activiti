@@ -31,9 +31,6 @@ import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.activiti.bpmn.model.Import;
 import org.activiti.engine.ActivitiException;
@@ -77,6 +74,11 @@ public class WSDLImporter implements XMLImporter {
     this.namespace = "";
   }
   
+  @Override
+  public String getImportType() {
+      return "http://schemas.xmlsoap.org/wsdl/";
+  }
+
   @Override
   public String getImportType() {
       return "http://schemas.xmlsoap.org/wsdl/";
@@ -215,16 +217,15 @@ public class WSDLImporter implements XMLImporter {
 
   private Element getRootTypes() {
     try {
-      DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      Document doc = docBuilder.parse(this.wsdlLocation);
+      DOMParser parser = new DOMParser();
+      parser.parse(this.wsdlLocation);
+      Document doc = parser.getDocument();
       Element root = (Element) doc.getFirstChild();
       Element typesElement = (Element) root.getElementsByTagName("wsdl:types").item(0);
       return (Element) typesElement.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "schema").item(0);
     } catch (SAXException e) {
       throw new ActivitiException(e.getMessage(), e);
     } catch (IOException e) {
-      throw new ActivitiException(e.getMessage(), e);
-    } catch (ParserConfigurationException e) {
       throw new ActivitiException(e.getMessage(), e);
     }
   }
