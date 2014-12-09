@@ -31,6 +31,8 @@ import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.activiti.bpmn.model.Import;
@@ -40,7 +42,6 @@ import org.activiti.engine.impl.bpmn.data.StructureDefinition;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.bpmn.parser.XMLImporter;
 import org.activiti.engine.impl.util.ReflectUtil;
-import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -214,15 +215,16 @@ public class WSDLImporter implements XMLImporter {
 
   private Element getRootTypes() {
     try {
-      DOMParser parser = new DOMParser();
-      parser.parse(this.wsdlLocation);
-      Document doc = parser.getDocument();
+      DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      Document doc = docBuilder.parse(this.wsdlLocation);
       Element root = (Element) doc.getFirstChild();
       Element typesElement = (Element) root.getElementsByTagName("wsdl:types").item(0);
       return (Element) typesElement.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "schema").item(0);
     } catch (SAXException e) {
       throw new ActivitiException(e.getMessage(), e);
     } catch (IOException e) {
+      throw new ActivitiException(e.getMessage(), e);
+    } catch (ParserConfigurationException e) {
       throw new ActivitiException(e.getMessage(), e);
     }
   }
