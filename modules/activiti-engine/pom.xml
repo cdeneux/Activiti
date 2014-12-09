@@ -73,7 +73,11 @@
       <artifactId>geronimo-jta_1.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+    <dependency>
+      <groupId>javax.enterprise.concurrent</groupId>
+      <artifactId>javax.enterprise.concurrent-api</artifactId>
+      <scope>provided</scope>
+  	</dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -173,6 +177,7 @@
       org.drools*;resolution:=optional,
       com.fasterxml*;resolution:=optional,
       javax.transaction;resolution:=optional,
+      javax.enterprise.concurrent;resolution:=optional,
     </activiti.osgi.import.additional>
   </properties>
 
