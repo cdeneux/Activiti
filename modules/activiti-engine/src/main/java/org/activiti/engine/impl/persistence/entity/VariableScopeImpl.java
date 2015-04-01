@@ -229,19 +229,25 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
   	} else {
   		
   		if (usedVariablesCache.containsKey(variableName)) {
-  			return usedVariablesCache.get(variableName).getValue();
+  		  VariableInstanceEntity variable = usedVariablesCache.get(variableName);
+  		  if (variable != null) {
+  		    return variable.getValue();
+  		  }
   		}
   		
   		if (variableInstances != null && variableInstances.containsKey(variableName)) {
-  			return variableInstances.get(variableName).getValue();
+  		  VariableInstanceEntity variable = variableInstances.get(variableName);
+        if (variable != null) {
+          return variableInstances.get(variableName).getValue();
+        }
   		}
   		
   		VariableInstanceEntity variable = getSpecificVariable(variableName);
-  		usedVariablesCache.put(variableName, variable);
-  		
   		if (variable != null) {
-  			return variable.getValue();
-  		} 
+  		  usedVariablesCache.put(variableName, variable);
+  		  return variable.getValue();
+  		}
+
   		return null;
   	}
   }
@@ -354,10 +360,24 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
     return Collections.unmodifiableMap(variableInstances);
   }
   
-  public Map<String, VariableInstanceEntity> getRawVariableInstances() {
-    return variableInstances;
+  public Map<String, Object> getVariableValues() {
+    Map<String, Object> variableMap = new HashMap<String, Object>();
+    if (variableInstances != null) {
+      for (String varName : variableInstances.keySet()) {
+        VariableInstanceEntity variableEntity = variableInstances.get(varName);
+        if (variableEntity != null) {
+          variableMap.put(varName, variableEntity.getValue());
+        } else {
+          variableMap.put(varName, null);
+        }
+      }
+    }
+    return variableMap;
   }
   
+  public Map<String, VariableInstanceEntity> getUsedVariablesCache() {
+    return usedVariablesCache;
+  }
   public void createVariablesLocal(Map<String, ? extends Object> variables) {
     if (variables!=null) {
       for (Map.Entry<String, ? extends Object> entry: variables.entrySet()) {
@@ -630,9 +650,9 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
     variableInstance.delete();
     variableInstance.setValue(null);
 
-    // Record historic variable
+    // Record historic variable deletion
     Context.getCommandContext().getHistoryManager()
-      .recordVariableUpdate(variableInstance);
+    	.recordVariableRemoved(variableInstance);
 
     // Record historic detail
     Context.getCommandContext().getHistoryManager()

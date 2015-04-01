@@ -35,6 +35,7 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
@@ -298,6 +299,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   protected int processDefinitionCacheLimit = -1; // By default, no limit
   protected DeploymentCache<ProcessDefinitionEntity> processDefinitionCache;
+  protected int bpmnModelCacheLimit = -1; // By default, no limit
+  protected DeploymentCache<BpmnModel> bpmnModelCache;
   
   protected int knowledgeBaseCacheLimit = -1;
   protected DeploymentCache<Object> knowledgeBaseCache;
@@ -616,6 +619,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected static Properties databaseTypeMappings = getDefaultDatabaseTypeMappings();
   
   public static final String DATABASE_TYPE_H2 = "h2";
+  public static final String DATABASE_TYPE_HSQL = "hsql";
   public static final String DATABASE_TYPE_MYSQL = "mysql";
   public static final String DATABASE_TYPE_ORACLE = "oracle";
   public static final String DATABASE_TYPE_POSTGRES = "postgres";
@@ -625,6 +629,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected static Properties getDefaultDatabaseTypeMappings() {
     Properties databaseTypeMappings = new Properties();
     databaseTypeMappings.setProperty("H2", DATABASE_TYPE_H2);
+    databaseTypeMappings.setProperty("HSQL Database Engine", DATABASE_TYPE_HSQL);
     databaseTypeMappings.setProperty("MySQL", DATABASE_TYPE_MYSQL);
     databaseTypeMappings.setProperty("Oracle", DATABASE_TYPE_ORACLE);
     databaseTypeMappings.setProperty("PostgreSQL", DATABASE_TYPE_POSTGRES);
@@ -943,7 +948,16 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
         } else {
           processDefinitionCache = new DefaultDeploymentCache<ProcessDefinitionEntity>(processDefinitionCacheLimit);
         }
-      } 
+      }
+      
+      // BpmnModel cache
+      if (bpmnModelCache == null) {
+        if (bpmnModelCacheLimit <= 0) {
+          bpmnModelCache = new DefaultDeploymentCache<BpmnModel>();
+        } else {
+          bpmnModelCache = new DefaultDeploymentCache<BpmnModel>(bpmnModelCacheLimit);
+        }
+      }
       
       // Knowledge base cache (used for Drools business task)
       if (knowledgeBaseCache == null) {
@@ -955,6 +969,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       }
       
       deploymentManager.setProcessDefinitionCache(processDefinitionCache);
+      deploymentManager.setBpmnModelCache(bpmnModelCache);
       deploymentManager.setKnowledgeBaseCache(knowledgeBaseCache);
     }
   }

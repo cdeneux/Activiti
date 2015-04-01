@@ -145,13 +145,8 @@ public abstract class BaseBpmnJsonConverter implements EditorJsonConstants, Sten
                 outgoingArrayNode.add(BpmnJsonConverterUtil.createResourceNode(boundaryEvent.getId()));
             }
 
-            if (activity.isAsynchronous()) {
-                propertiesNode.put(PROPERTY_ASYNCHRONOUS, PROPERTY_VALUE_YES);
-            }
-
-            if (activity.isNotExclusive()) {
-                propertiesNode.put(PROPERTY_EXCLUSIVE, PROPERTY_VALUE_NO);
-            }
+            propertiesNode.put(PROPERTY_ASYNCHRONOUS, activity.isAsynchronous());
+            propertiesNode.put(PROPERTY_EXCLUSIVE, !activity.isNotExclusive());
 
             if (activity.getLoopCharacteristics() != null) {
                 MultiInstanceLoopCharacteristics loopDef = activity.getLoopCharacteristics();
@@ -492,6 +487,9 @@ public abstract class BaseBpmnJsonConverter implements EditorJsonConstants, Sten
                 if (StringUtils.isNotEmpty(timerDefinition.getTimeDate())) {
                     propertiesNode.put(PROPERTY_TIMER_DATE, timerDefinition.getTimeDate());
                 }
+                if (StringUtils.isNotEmpty(timerDefinition.getEndDate())) {
+                    propertiesNode.put(PROPERTY_TIMER_CYCLE_END_DATE, timerDefinition.getEndDate());
+                }
             }
         }
     }
@@ -550,6 +548,7 @@ public abstract class BaseBpmnJsonConverter implements EditorJsonConstants, Sten
         String timeDate = getPropertyValueAsString(PROPERTY_TIMER_DATE, objectNode);
         String timeCycle = getPropertyValueAsString(PROPERTY_TIMER_CYCLE, objectNode);
         String timeDuration = getPropertyValueAsString(PROPERTY_TIMER_DURATON, objectNode);
+        String endDate = getPropertyValueAsString(PROPERTY_TIMER_CYCLE_END_DATE, objectNode);
 
         TimerEventDefinition eventDefinition = new TimerEventDefinition();
         if (StringUtils.isNotEmpty(timeDate)) {
@@ -560,6 +559,10 @@ public abstract class BaseBpmnJsonConverter implements EditorJsonConstants, Sten
 
         } else if (StringUtils.isNotEmpty(timeDuration)) {
             eventDefinition.setTimeDuration(timeDuration);
+        }
+      
+      if (StringUtils.isNotEmpty(endDate)) {
+            eventDefinition.setEndDate(endDate);
         }
 
         event.getEventDefinitions().add(eventDefinition);
