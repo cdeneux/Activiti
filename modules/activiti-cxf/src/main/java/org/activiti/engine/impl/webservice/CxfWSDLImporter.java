@@ -77,7 +77,17 @@ public class CxfWSDLImporter implements XMLImporter {
     this.namespace = theImport.getNamespace() == null ? "" : theImport.getNamespace() + ":";
     try {
       final URIResolver uriResolver = new URIResolver(parse.getSourceSystemId(), theImport.getLocation());
-      this.importFrom(uriResolver.getURL().toString());
+      if (uriResolver.isResolved()) {
+          if (uriResolver.getURI() != null) {
+              this.importFrom(uriResolver.getURI().toString());
+          } else if (uriResolver.isFile()) {
+              this.importFrom(uriResolver.getFile().getAbsolutePath());
+          } else if (uriResolver.getURL() != null) {
+              this.importFrom(uriResolver.getURL().toString());
+          }
+      } else {
+          throw new UncheckedException(new Exception("Unresolved import against " + parse.getSourceSystemId()));
+      }
     this.transferImportsToParse(parse);
     } catch (final IOException e) {
       throw new UncheckedException(e);

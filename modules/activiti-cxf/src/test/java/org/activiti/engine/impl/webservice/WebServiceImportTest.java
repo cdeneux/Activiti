@@ -30,4 +30,12 @@ public class WebServiceImportTest extends PluggableActivitiTestCase {
 
     }
 
+    @Deployment
+    public void testImport_DifferentDirectories() throws Exception {
+
+        processEngine.getRuntimeService().startProcessInstanceByKey("webServiceInvocationImport_DifferentDirectories");
+        waitForJobExecutorToProcessAllJobs(10000L, 250L);
+
+    }
+
 }
