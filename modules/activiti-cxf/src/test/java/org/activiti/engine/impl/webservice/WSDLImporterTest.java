@@ -13,6 +13,7 @@
 package org.activiti.engine.impl.webservice;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -147,6 +148,7 @@ public class WSDLImporterTest {
   @Test
   public void testImportBasicElement() throws Exception {
       URL url = ReflectUtil.getResource("org/activiti/engine/impl/webservice/basic-elements-in-types.wsdl");
+      assertNotNull(url);
       importer.importFrom(url.toString());
     }
 }

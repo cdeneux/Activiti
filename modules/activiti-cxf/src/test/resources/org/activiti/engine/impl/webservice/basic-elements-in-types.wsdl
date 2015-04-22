@@ -36,7 +36,7 @@
    <wsdl:message name="date">
       <wsdl:part element="tns:date" name="date" />
    </wsdl:message>
-   <wsdl:message name="rui">
+   <wsdl:message name="uri">
       <wsdl:part element="tns:uri" name="uri" />
    </wsdl:message>
    <wsdl:portType name="Basic">
