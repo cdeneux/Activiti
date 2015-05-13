@@ -7,10 +7,10 @@
   <artifactId>activiti-bpmn-layout</artifactId>
 
   <parent>
-    <groupId>org.activiti</groupId>
+    <groupId>org.ow2.petals.activiti</groupId>
     <artifactId>activiti-root</artifactId>
     <relativePath>../..</relativePath>
-    <version>5.20.0-SNAPSHOT</version>
+    <version>5.20.0-PETALS-0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -88,7 +88,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.activiti</groupId>
+      <groupId>org.ow2.petals.activiti</groupId>
       <artifactId>activiti-bpmn-model</artifactId>
     </dependency>
     <dependency>

@@ -7,23 +7,23 @@
   <artifactId>activiti-engine</artifactId>
 
   <parent>
-    <groupId>org.activiti</groupId>
+    <groupId>org.ow2.petals.activiti</groupId>
     <artifactId>activiti-root</artifactId>
     <relativePath>../..</relativePath>
-    <version>5.20.0-SNAPSHOT</version>
+    <version>5.20.0-PETALS-0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.activiti</groupId>
+      <groupId>org.ow2.petals.activiti</groupId>
       <artifactId>activiti-bpmn-converter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.activiti</groupId>
+      <groupId>org.ow2.petals.activiti</groupId>
       <artifactId>activiti-process-validation</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.activiti</groupId>
+      <groupId>org.ow2.petals.activiti</groupId>
       <artifactId>activiti-image-generator</artifactId>
     </dependency>
     <dependency>

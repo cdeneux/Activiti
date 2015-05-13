@@ -4,7 +4,7 @@
 
   <name>Activiti</name>
   <description>BPM and workflow engine</description>
-  <groupId>org.activiti</groupId>
+  <groupId>org.ow2.petals.activiti</groupId>
   <artifactId>activiti-root</artifactId>
 
   <parent>
@@ -14,7 +14,7 @@
   </parent>
 
   <packaging>pom</packaging>
-  <version>5.20.0-SNAPSHOT</version>
+  <version>5.20.0-PETALS-0-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.framework.version>4.1.5.RELEASE</spring.framework.version>
@@ -183,7 +183,7 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-engine</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -193,12 +193,12 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-bpmn-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-bpmn-converter</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -254,17 +254,17 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-bpmn-layout</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-process-validation</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.activiti</groupId>
+        <groupId>org.ow2.petals.activiti</groupId>
         <artifactId>activiti-image-generator</artifactId>
         <version>${project.version}</version>
       </dependency>
