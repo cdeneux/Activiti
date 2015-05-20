@@ -15,6 +15,7 @@ package org.activiti.engine.test.api.event;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.delegate.event.ActivitiEntityEvent;
+import org.activiti.engine.delegate.event.ActivitiProcessStartedEvent;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -39,7 +40,7 @@ public class ExecutionEventsTest extends PluggableActivitiTestCase {
 			assertNotNull(processInstance);
 			
 			// Check create-event
-			assertEquals(2, listener.getEventsReceived().size());
+			assertEquals(3, listener.getEventsReceived().size());
 			assertTrue(listener.getEventsReceived().get(0) instanceof ActivitiEntityEvent);
 			
 			ActivitiEntityEvent event = (ActivitiEntityEvent) listener.getEventsReceived().get(0);
@@ -49,6 +50,10 @@ public class ExecutionEventsTest extends PluggableActivitiTestCase {
 			event = (ActivitiEntityEvent) listener.getEventsReceived().get(1);
             assertEquals(ActivitiEventType.ENTITY_INITIALIZED, event.getType());
             assertEquals(processInstance.getId(), ((Execution) event.getEntity()).getId());
+            
+            event = (ActivitiEntityEvent) listener.getEventsReceived().get(2);
+            assertEquals(ActivitiEventType.PROCESS_STARTED, event.getType());
+            assertEquals(processInstance.getId(), ((ActivitiProcessStartedEvent) event).getProcessInstanceId());
             listener.clearEventsReceived();
 			
 			// Check update event when suspended/activated
