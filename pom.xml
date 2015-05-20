@@ -1135,7 +1135,7 @@
   </ciManagement>
   <scm>
     <url>git@github.com:Activiti/Activiti.git</url>
-    <connection>scm:git:cdeneux@github.com:cdeneux/Activiti.git</connection>
-    <developerConnection>scm:git:cdeneux@github.com:cdeneux/Activiti.git</developerConnection>
+    <connection>scm:git:ssh://cdeneux@github.com/cdeneux/Activiti.git</connection>
+    <developerConnection>scm:git:ssh://cdeneux@github.com/cdeneux/Activiti.git</developerConnection>
   </scm>
 </project>
