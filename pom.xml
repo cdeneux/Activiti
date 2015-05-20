@@ -1128,8 +1128,8 @@
     <url>http://bamboo.ci.codehaus.org/browse/ACT</url>
   </ciManagement>
   <scm>
-    <url>git@github.com:Activiti/Activiti.git</url>
-    <connection>scm:git:ssh://cdeneux@github.com/cdeneux/Activiti.git</connection>
-    <developerConnection>scm:git:ssh://cdeneux@github.com/cdeneux/Activiti.git</developerConnection>
+    <url>https://github.com/cdeneux/Activiti.git</url>
+    <connection>scm:git:https://github.com/cdeneux/Activiti.git</connection>
+    <developerConnection>scm:git:https://github.com/cdeneux/Activiti.git</developerConnection>
   </scm>
 </project>
