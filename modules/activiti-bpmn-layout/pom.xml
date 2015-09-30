@@ -9,7 +9,7 @@
     <groupId>org.ow2.petals.activiti</groupId>
     <artifactId>activiti-root</artifactId>
     <relativePath>../..</relativePath>
-    <version>5.18.0-PETALS-1</version>
+    <version>5.18.0-PETALS-1-SNAPSHOT</version>
   </parent>
 
   <properties>
