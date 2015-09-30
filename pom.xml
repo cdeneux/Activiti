@@ -13,7 +13,7 @@
   </parent>
 
   <packaging>pom</packaging>
-  <version>5.18.0-PETALS-2-SNAPSHOT</version>
+  <version>5.18.0-PETALS-1-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.framework.version>4.1.5.RELEASE</spring.framework.version>
