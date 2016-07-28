@@ -21,11 +21,6 @@ import org.activiti.bpmn.model.Import;
  */
 public interface XMLImporter {
 
-    /**
-     * @return The import type that the importer is able to import
-     */
-    public String getImportType();
-
   /**
    * Imports the definitions in the XML declared in element
    * 

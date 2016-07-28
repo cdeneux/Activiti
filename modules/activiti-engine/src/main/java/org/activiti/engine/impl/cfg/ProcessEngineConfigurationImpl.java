@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,7 +70,6 @@ import org.activiti.engine.impl.bpmn.data.ItemInstance;
 import org.activiti.engine.impl.bpmn.deployer.BpmnDeployer;
 import org.activiti.engine.impl.bpmn.parser.BpmnParseHandlers;
 import org.activiti.engine.impl.bpmn.parser.BpmnParser;
-import org.activiti.engine.impl.bpmn.parser.XMLImporter;
 import org.activiti.engine.impl.bpmn.parser.factory.AbstractBehaviorFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.DefaultActivityBehaviorFactory;
@@ -495,8 +493,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected ActivityBehaviorFactory activityBehaviorFactory;
   protected ListenerFactory listenerFactory;
   protected BpmnParseFactory bpmnParseFactory;
-
-    protected Map<String, XMLImporter> importers;
   
   // PROCESS VALIDATION 
   
@@ -1221,7 +1217,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     bpmnParser.setBpmnParseFactory(bpmnParseFactory);
     bpmnParser.setActivityBehaviorFactory(activityBehaviorFactory);
     bpmnParser.setListenerFactory(listenerFactory);
-        bpmnParser.setImporters(importers);
     
     List<BpmnParseHandler> parseHandlers = new ArrayList<BpmnParseHandler>();
     if(getPreBpmnParseHandlers() != null) {

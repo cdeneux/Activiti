@@ -12,8 +12,6 @@
  */
 package org.activiti.engine.impl.bpmn.parser;
 
-import java.util.Map;
-
 import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.ListenerFactory;
 import org.activiti.engine.impl.cfg.BpmnParseFactory;
@@ -52,7 +50,6 @@ public class BpmnParser {
   protected ListenerFactory listenerFactory;
   protected BpmnParseFactory bpmnParseFactory;
   protected BpmnParseHandlers bpmnParserHandlers;
-    protected Map<String, XMLImporter> importers;
   
   /**
    * Creates a new {@link BpmnParse} instance that can be used
@@ -101,12 +98,4 @@ public class BpmnParser {
   public void setBpmnParserHandlers(BpmnParseHandlers bpmnParserHandlers) {
     this.bpmnParserHandlers = bpmnParserHandlers;
   }
-
-    public Map<String, XMLImporter> getImporters() {
-        return importers;
-    }
-
-    public void setImporters(Map<String, XMLImporter> importers) {
-        this.importers = importers;
-    }
 }

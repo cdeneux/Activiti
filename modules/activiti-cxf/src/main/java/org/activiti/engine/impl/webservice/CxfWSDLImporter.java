@@ -79,11 +79,6 @@ public class CxfWSDLImporter implements XMLImporter {
     this.namespace = "";
   }
   
-  @Override
-  public String getImportType() {
-      return "http://schemas.xmlsoap.org/wsdl/";
-  }
-  
   public void importFrom(Import theImport, BpmnParse parse) {
     this.namespace = theImport.getNamespace() == null ? "" : theImport.getNamespace() + ":";
     try {
