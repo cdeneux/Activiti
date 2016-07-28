@@ -615,7 +615,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // init /////////////////////////////////////////////////////////////////////
   
   protected void init() {
-        loadImporters();
   	initConfigurators();
   	configuratorsBeforeInit();
     initProcessDiagramGenerator();

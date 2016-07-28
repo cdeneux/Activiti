@@ -157,13 +157,6 @@ public class WSDLImporterTest {
     }
   }
   
-  @Test
-  public void testImportBasicElement() throws Exception {
-      URL url = ReflectUtil.getResource("org/activiti/engine/impl/webservice/basic-elements-in-types.wsdl");
-      assertNotNull(url);
-      importer.importFrom(url.toString());
-  }
-  
   public void testImportInheritedElement() throws Exception {
     URL url = ReflectUtil.getResource("org/activiti/engine/impl/webservice/inherited-elements-in-types.wsdl");
     assertNotNull(url);
