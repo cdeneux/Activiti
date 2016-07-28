@@ -13,7 +13,7 @@
   </parent>
 
   <packaging>pom</packaging>
-  <version>5.20.0-PETALS-0-SNAPSHOT</version>
+  <version>5.22.0-PETALS-0-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.framework.version>4.1.5.RELEASE</spring.framework.version>
@@ -751,6 +751,7 @@
         <module>modules/activiti-image-generator</module>
         <module>modules/activiti-bpmn-converter</module>
         <module>modules/activiti-engine</module>
+        <module>modules/activiti-secure-javascript</module>
         <module>modules/activiti-bpmn-layout</module>
         <module>modules/activiti-json-converter</module>
         <module>modules/activiti-simple-workflow</module>
@@ -835,7 +836,7 @@
         <module>modules/activiti-rest</module>
         <module>modules/activiti-webapp-rest2</module>
         <module>modules/activiti-cxf</module>
-        <module>modules/activiti-cdi</module>
+        <module>modules/activiti-secure-javascript</module>
       </modules>
     </profile>
     <profile>
@@ -857,7 +858,7 @@
         <module>modules/activiti-rest</module>
         <module>modules/activiti-webapp-rest2</module>
         <module>modules/activiti-cxf</module>
-        <module>modules/activiti-cdi</module>
+        <module>modules/activiti-secure-javascript</module>
       </modules>
     </profile>
     <profile>
@@ -913,6 +914,7 @@
         <module>modules/activiti-bpmn-converter</module>
         <module>modules/activiti-bpmn-layout</module>
         <module>modules/activiti-json-converter</module>
+        <module>modules/activiti-secure-javascript</module>
         <module>modules/activiti-simple-workflow</module>
         <module>modules/activiti-spring</module>
         <module>modules/activiti-spring-boot</module>
@@ -977,6 +979,7 @@
         <module>modules/activiti-json-converter</module>
         <module>modules/activiti-bpmn-converter</module>
         <module>modules/activiti-engine</module>
+        <module>modules/activiti-secure-javascript</module>
         <module>modules/activiti-spring</module>
         <module>modules/activiti-explorer</module>
         <module>modules/activiti-common-rest</module>
@@ -1018,6 +1021,7 @@
         <module>modules/activiti-json-converter</module>
         <module>modules/activiti-bpmn-converter</module>
         <module>modules/activiti-engine</module>
+        <module>modules/activiti-secure-javascript</module>
         <module>modules/activiti-spring</module>
         <module>modules/activiti-common-rest</module>
         <module>modules/activiti-rest</module>

@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.runtime.Job;
@@ -49,6 +52,20 @@ public class SubProcessTest extends PluggableActivitiTestCase {
     assertNull(runtimeService.createProcessInstanceQuery().processInstanceId(pi.getId()).singleResult());
   }
   
+  @Deployment
+  public void testSubProcessWithEndExecutionListener() {
+    SubProcessStubExecutionListener.executionCounter = 0;
+    SubProcessStubExecutionListener.endExecutionCounter = 0;
+    
+    ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess");
+    Task subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
+    assertEquals("Task in subprocess", subProcessTask.getName());
+    
+    runtimeService.deleteProcessInstance(pi.getProcessInstanceId(), "because");
+    assertEquals(1, SubProcessStubExecutionListener.executionCounter);
+    assertEquals(0, SubProcessStubExecutionListener.endExecutionCounter);
+  }
+  
   /**
    * Same test case as before, but now with all automatic steps
    */
@@ -76,10 +93,17 @@ public class SubProcessTest extends PluggableActivitiTestCase {
     waitForJobExecutorToProcessAllJobs(5000L, 50L);
 
     // The subprocess should be left, and the escalated task should be active
-    Task escalationTask = taskService.createTaskQuery()
-                                                   .processInstanceId(pi.getId())
-                                                   .singleResult();
+    Task escalationTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("Fix escalated problem", escalationTask.getName());
+    
+    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+      // Verify history for task that was killed
+      HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskName("Task in subprocess").singleResult();
+      assertNotNull(historicTaskInstance.getEndTime());
+      
+      HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().activityId("subProcessTask").singleResult();
+      assertNotNull(historicActivityInstance.getEndTime());
+    }
   }
   
   /**

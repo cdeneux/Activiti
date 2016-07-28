@@ -35,6 +35,7 @@ import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
+import org.activiti.engine.impl.history.HistoryManager;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.activiti.engine.impl.jobexecutor.TimerDeclarationImpl;
@@ -464,7 +465,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     if (isConcurrent()) {
       List< ? extends ActivityExecution> concurrentExecutions = getParent().getAllChildExecutions();
       for (ActivityExecution concurrentExecution: concurrentExecutions) {
-        if (concurrentExecution.getActivity()==activity) {
+        if (concurrentExecution.getActivity() != null && concurrentExecution.getActivity().getId().equals(activity.getId())) {
           if (!concurrentExecution.isActive()) {
             inactiveConcurrentExecutionsInActivity.add(concurrentExecution);
           }
@@ -535,12 +536,19 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       List<ExecutionEntity> recyclableExecutionImpls = (List) recyclableExecutions;
       recyclableExecutions.remove(concurrentRoot);
       for (ExecutionEntity prunedExecution: recyclableExecutionImpls) {
+        
         // End the pruned executions if necessary.
         // Some recyclable executions are inactivated (joined executions)
         // Others are already ended (end activities)
         
+        // Need to call the activity end here. If we would do it later,
+        // the executions are removed and the historic activity instances are
+        // never ended as the combination of {activityId,executionId} is not valid anymor
+        Context.getCommandContext().getHistoryManager().recordActivityEnd(prunedExecution);
+        
         log.debug("pruning execution {}", prunedExecution);
         prunedExecution.remove();
+        
       }
 
       log.debug("activating the concurrent root {} as the single path of execution going forward", concurrentRoot);
@@ -801,6 +809,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   public void setProcessDefinition(ProcessDefinitionImpl processDefinition) {
     this.processDefinition = processDefinition;
     this.processDefinitionId = processDefinition.getId();
+    this.processDefinitionKey = processDefinition.getKey();
   }
 
   // process instance /////////////////////////////////////////////////////////
@@ -1001,17 +1010,22 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
     
     // remove all child executions and sub process instances:
+    HistoryManager historyManager = Context.getCommandContext().getHistoryManager();
     List<InterpretableExecution> executions = new ArrayList<InterpretableExecution>(getExecutions());
     for (InterpretableExecution childExecution : executions) {
       if (childExecution.getSubProcessInstance()!=null) {
         childExecution.getSubProcessInstance().deleteCascade(reason);
-      }      
+      }    
+      historyManager.recordActivityEnd((ExecutionEntity) childExecution);
       childExecution.deleteCascade(reason);
     } 
     
+    if (activityId != null) {
+      historyManager.recordActivityEnd(this);
+    }
+    
     removeTasks(reason);
     removeJobs();
-    // Daniel thought this would be needed, but it seems not: removeEventSubscriptions();
   } 
     
   private void removeEventScopes() {

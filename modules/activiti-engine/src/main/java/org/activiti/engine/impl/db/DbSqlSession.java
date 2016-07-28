@@ -58,7 +58,6 @@ import org.activiti.engine.impl.UserQueryImpl;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.upgrade.DbUpgradeStep;
-import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.engine.impl.interceptor.Session;
 import org.activiti.engine.impl.persistence.entity.PropertyEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
@@ -116,6 +115,8 @@ public class DbSqlSession implements Session {
 	  ACTIVITI_VERSIONS.add(new ActivitiVersion("5.18.0.1"));
 	  ACTIVITI_VERSIONS.add(new ActivitiVersion("5.20.0.0"));
 	  ACTIVITI_VERSIONS.add(new ActivitiVersion("5.20.0.1"));
+	  ACTIVITI_VERSIONS.add(new ActivitiVersion("5.20.0.2"));
+	  ACTIVITI_VERSIONS.add(new ActivitiVersion("5.21.0.0"));
 	  
 	  /* Current */
 	  ACTIVITI_VERSIONS.add(new ActivitiVersion(ProcessEngine.VERSION));
@@ -416,7 +417,11 @@ public class DbSqlSession implements Session {
   }
   
   @SuppressWarnings("rawtypes")
-  public List selectList(String statement, ListQueryParameterObject parameter, Page page) {   
+  public List selectList(String statement, ListQueryParameterObject parameter, Page page) {
+    if (page != null) {
+      parameter.setFirstResult(page.getFirstResult());
+      parameter.setMaxResults(page.getMaxResults());
+    }
     return selectList(statement, parameter);
   }
 
@@ -791,6 +796,7 @@ public class DbSqlSession implements Session {
     for (Class<? extends PersistentObject> persistentObjectClass : EntityDependencyOrder.INSERT_ORDER) {
       if (insertedObjects.containsKey(persistentObjectClass)) {
       	flushPersistentObjects(persistentObjectClass, insertedObjects.get(persistentObjectClass));
+      	insertedObjects.remove(persistentObjectClass);
       }
     }
     
@@ -814,7 +820,6 @@ public class DbSqlSession implements Session {
 	  }	else {
 	  	flushBulkInsert(insertedObjects.get(persistentObjectClass), persistentObjectClass);
 	  }
-	  insertedObjects.remove(persistentObjectClass);
   }
   
   protected void flushRegularInsert(PersistentObject persistentObject, Class<? extends PersistentObject> clazz) {
@@ -1016,8 +1021,6 @@ public class DbSqlSession implements Session {
   }
 
   public void dbSchemaCreate() {
-    ProcessEngineConfigurationImpl processEngineConfiguration = Context.getProcessEngineConfiguration();
-    
     if (isEngineTablePresent()) {
       String dbVersion = getDbVersion();
       if (!ProcessEngine.VERSION.equals(dbVersion)) {
@@ -1027,11 +1030,11 @@ public class DbSqlSession implements Session {
       dbSchemaCreateEngine();
     }
 
-    if (processEngineConfiguration.getHistoryLevel() != HistoryLevel.NONE) {
+    if (dbSqlSessionFactory.isDbHistoryUsed()) {
       dbSchemaCreateHistory();
     }
 
-    if (processEngineConfiguration.isDbIdentityUsed()) {
+    if (dbSqlSessionFactory.isDbIdentityUsed()) {
       dbSchemaCreateIdentity();
     }
   }
