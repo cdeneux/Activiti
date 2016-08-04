@@ -157,7 +157,6 @@ public class WSDLImporterTest {
     }
   }
   
-  @Test
   public void testImportInheritedElement() throws Exception {
     URL url = ReflectUtil.getResource("org/activiti/engine/impl/webservice/inherited-elements-in-types.wsdl");
     assertNotNull(url);

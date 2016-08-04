@@ -728,5 +728,4 @@ public class BpmnParse implements BpmnXMLConstants {
   public String getSourceSystemId() {
     return this.sourceSystemId;
   }
-  
 }
