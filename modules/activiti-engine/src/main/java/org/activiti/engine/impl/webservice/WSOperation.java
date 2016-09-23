@@ -62,7 +62,7 @@ public class WSOperation implements OperationImplementation {
   /**
    * {@inheritDoc}
    */
-    public MessageInstance sendFor(MessageInstance message, Operation operation, final ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
+  public MessageInstance sendFor(MessageInstance message, Operation operation, final ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
     Object[] arguments = this.getArguments(message);
     Object[] results = this.safeSend(arguments, overridenEndpointAddresses);
     return this.createResponseMessage(results, operation);
@@ -72,15 +72,8 @@ public class WSOperation implements OperationImplementation {
     return message.getStructureInstance().toArray();
   }
   
-    private Object[] safeSend(Object[] arguments, final ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
-    Object[] results = null;
-    
-    try {
-            results = this.service.getClient().send(this.name, arguments, overridenEndpointAddresses);
-    } catch (Exception e) {
-      throw e;
-    }
-    
+  private Object[] safeSend(Object[] arguments, final ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
+    Object[] results = this.service.getClient().send(this.name, arguments, overridenEndpointAddresses);
     if (results == null) {
       results = new Object[] {};
     }

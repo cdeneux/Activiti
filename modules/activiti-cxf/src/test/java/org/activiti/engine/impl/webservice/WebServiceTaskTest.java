@@ -33,7 +33,7 @@ import org.apache.cxf.interceptor.Fault;
  *
  * @author <a href="mailto:gnodet@gmail.com">Guillaume Nodet</a>
  */
-public class WebServiceTaskTest extends AbstratWebServiceTask {
+public class WebServiceTaskTest extends AbstractWebServiceTaskTest {
 
     @Deployment
     public void testWebServiceInvocation() throws Exception {
@@ -52,9 +52,9 @@ public class WebServiceTaskTest extends AbstratWebServiceTask {
 
         assertEquals(-1, webServiceMock.getCount());
 
-        processEngine.getProcessEngineConfiguration().addWsEndpointAddress(
+        processEngineConfiguration.addWsEndpointAddress(
                 new QName("http://webservice.impl.engine.activiti.org/", "CounterImplPort"),
-                new URL(WEBSERVICE_MOCK_ADDRESS));
+                new URL("http://localhost:63081/webservicemock"));
 
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("webServiceInvocation");
         waitForJobExecutorToProcessAllJobs(10000L, 250L);

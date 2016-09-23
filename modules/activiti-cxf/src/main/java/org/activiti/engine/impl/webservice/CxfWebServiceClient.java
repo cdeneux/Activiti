@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.xml.namespace.QName;
 
+import javax.xml.namespace.QName;
+
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.BpmnError;
 import org.apache.cxf.endpoint.Client;
@@ -67,15 +69,18 @@ public class CxfWebServiceClient implements SyncWebServiceClient {
   /**
    * {@inheritDoc}}
    */
-  public Object[] send(String methodName, Object[] arguments, final ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
+  public Object[] send(String methodName, Object[] arguments, java.util.concurrent.ConcurrentMap<QName,URL> overridenEndpointAddresses) throws Exception {
     try {
-       // If needed, we override the endpoint address
-       final URL newEndpointAddress = overridenEndpointAddresses
-                .get(this.client.getEndpoint().getEndpointInfo().getName());
-       if (newEndpointAddress != null) {
-          this.client.getRequestContext().put(Message.ENDPOINT_ADDRESS, newEndpointAddress.toExternalForm());
-       }
-       return client.invoke(methodName, arguments);
+	    URL newEndpointAddress = null;
+	    if (overridenEndpointAddresses != null) {
+  	    newEndpointAddress = overridenEndpointAddresses
+               .get(this.client.getEndpoint().getEndpointInfo().getName());
+	    }
+	    
+    	if (newEndpointAddress != null) {
+       		this.client.getRequestContext().put(Message.ENDPOINT_ADDRESS, newEndpointAddress.toExternalForm());
+    	}
+    	return client.invoke(methodName, arguments);
     } catch (Fault e) {
        LOGGER.debug("Technical error calling WS", e);
        throw new ActivitiException(e.getMessage(), e);
