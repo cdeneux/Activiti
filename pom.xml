@@ -13,7 +13,7 @@
   </parent>
 
   <packaging>pom</packaging>
-  <version>5.22.0-PETALS-0-SNAPSHOT</version>
+  <version>5.23.0-PETALS-0-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.framework.version>4.1.5.RELEASE</spring.framework.version>
@@ -370,19 +370,19 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
-        <version>4.2.0</version>
+        <version>6.0.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>4.2.0</version>
+        <version>5.0.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.felix</groupId>
         <artifactId>org.apache.felix.fileinstall</artifactId>
-        <version>3.0.2</version>
+        <version>3.5.4</version>
         <optional>true</optional>
       </dependency>
       <dependency>
@@ -1068,6 +1068,16 @@
     <url>http://www.alfresco.com</url>
   </organization>
   <developers>
+  	<developer>
+      <name>Bassam Al-Sarori</name>
+      <organization>Alfresco</organization>
+      <url>http://www.alfresco.com</url>
+    </developer>
+    <developer>
+      <name>Vasile Dirla</name>
+      <organization>Alfresco</organization>
+      <url>http://www.alfresco.com</url>
+    </developer>
     <developer>
       <name>Tijs Rademakers</name>
       <organization>Alfresco</organization>

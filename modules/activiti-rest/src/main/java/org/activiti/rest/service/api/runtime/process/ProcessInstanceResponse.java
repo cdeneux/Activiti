@@ -34,9 +34,11 @@ public class ProcessInstanceResponse {
   protected boolean ended;
   protected String processDefinitionId;
   protected String processDefinitionUrl;
+  protected String processDefinitionKey;
   protected String activityId;
   protected List<RestVariable> variables = new ArrayList<RestVariable>();
   protected String tenantId;
+  protected String name;
   
   //Added by Ryan Johnston
   protected boolean completed;
@@ -92,11 +94,19 @@ public class ProcessInstanceResponse {
   public String getProcessDefinitionUrl() {
     return processDefinitionUrl;
   }
-  
+
   public void setProcessDefinitionUrl(String processDefinitionUrl) {
     this.processDefinitionUrl = processDefinitionUrl;
   }
-  
+
+  public String getProcessDefinitionKey() {
+    return processDefinitionKey;
+  }
+
+  public void setProcessDefinitionKey(String processDefinitionKey) {
+    this.processDefinitionKey = processDefinitionKey;
+  }
+
   public String getActivityId() {
     return activityId;
   }
@@ -123,6 +133,14 @@ public class ProcessInstanceResponse {
   
   public String getTenantId() {
 	  return tenantId;
+  }
+  
+  public void setName(String name) {
+	  this.name = name;
+  }
+  
+  public String getName() {
+	  return name;
   }
   
   //Added by Ryan Johnston

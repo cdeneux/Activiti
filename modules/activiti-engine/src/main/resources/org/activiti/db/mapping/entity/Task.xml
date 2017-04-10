@@ -335,7 +335,7 @@
   </sql>
   
   <sql id="commonSelectTaskByQueryCriteriaSql">
-    <if test="candidateUser != null || candidateGroups != null || bothCandidateAndAssigned">
+    <if test="candidateUser != null || candidateGroups != null || bothCandidateAndAssigned || involvedGroups != null">
       <choose>
         <when test="bothCandidateAndAssigned">left</when>
         <otherwise>inner</otherwise>
@@ -353,24 +353,22 @@
       </choose>       
     </foreach>
     <foreach collection="orQueryObjects" index="orIndex" item="orQueryObject">
-      <if test="orQueryObject.candidateUser != null || orQueryObject.candidateGroups != null || orQueryObject.bothCandidateAndAssigned">
+      <if test="orQueryObject.candidateUser != null || orQueryObject.candidateGroups != null || orQueryObject.bothCandidateAndAssigned || orQueryObject.involvedGroups != null">
         <choose>
-          <when test="orQueryObject.bothCandidateAndAssigned">left</when>
+          <when test="orQueryObject.bothCandidateAndAssigned || orQueryObject.involvedGroups != null">left</when>
           <otherwise>inner</otherwise>
         </choose>
         join ${prefix}ACT_RU_IDENTITYLINK I_OR${orIndex} on I_OR${orIndex}.TASK_ID_ = RES.ID_
       </if>
-      <foreach collection="orQueryObject.queryVariableValues" index="index" item="var">
-        <choose>
-          <when test="var.local">
-            left outer join ${prefix}ACT_RU_VARIABLE A_OR${orIndex}_${index} on RES.ID_ = A_OR${orIndex}_${index}.TASK_ID_ 
-          </when>
-          <otherwise>
-            left outer join ${prefix}ACT_RU_VARIABLE A_OR${orIndex}_${index} on RES.PROC_INST_ID_ = A_OR${orIndex}_${index}.PROC_INST_ID_ 
-          </otherwise>
-        </choose>       
-      </foreach>
-      
+      <if test="orQueryObject.queryVariableValues.size() &gt; 0">
+        <if test="orQueryObject.hasLocalQueryVariableValue()">
+          left outer join ${prefix}ACT_RU_VARIABLE A_L_OR${orIndex} on RES.ID_ = A_L_OR${orIndex}.TASK_ID_
+        </if>
+        <if test="orQueryObject.hasNonLocalQueryVariableValue()">
+          left outer join ${prefix}ACT_RU_VARIABLE A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_
+        </if>
+      </if>
+
       <if test="orQueryObject.processDefinitionKey != null || orQueryObject.processDefinitionKeyLike != null || orQueryObject.processDefinitionKeyLikeIgnoreCase != null || orQueryObject.processDefinitionName != null || orQueryObject.processDefinitionNameLike != null || (orQueryObject.processCategoryInList != null &amp;&amp; orQueryObject.processCategoryInList.size() &gt; 0) || (orQueryObject.processCategoryNotInList != null &amp;&amp; orQueryObject.processCategoryNotInList.size() &gt; 0) || (orQueryObject.processDefinitionKeys != null &amp;&amp; orQueryObject.processDefinitionKeys.size() &gt; 0)">
         left outer join ${prefix}ACT_RE_PROCDEF D_OR${orIndex} on RES.PROC_DEF_ID_ = D_OR${orIndex}.ID_
       </if>
@@ -592,11 +590,23 @@
         )
       </if>
       <if test="involvedUser != null">
-        and (
+        and
+        (
           exists(select LINK.USER_ID_ from ${prefix}ACT_RU_IDENTITYLINK LINK where USER_ID_ = #{involvedUser} and LINK.TASK_ID_ = RES.ID_)
           or RES.ASSIGNEE_ = #{involvedUser}
           or RES.OWNER_ = #{involvedUser}
-          )
+        )
+      </if>
+      <if test="involvedGroups != null &amp;&amp; involvedGroups.size() &gt; 0">
+        and
+        (
+          I.TYPE_ = 'participant'
+          and
+          I.GROUP_ID_ IN
+          <foreach item="group" index="index" collection="involvedGroups" open="(" separator="," close=")">
+            #{group}
+          </foreach>
+        )
       </if>
       <foreach item="var" collection="queryVariableValues" index="index">
         <if test="!var.local">
@@ -907,37 +917,55 @@
               ))
             </if>
             <if test="orQueryObject.involvedUser != null">
-              or (
-                exists(select LINK.USER_ID_ from ${prefix}ACT_RU_IDENTITYLINK LINK where USER_ID_ = #{orQueryObject.involvedUser} and LINK.TASK_ID_ = RES.ID_)
-                or RES.ASSIGNEE_ = #{orQueryObject.involvedUser}
-                or RES.OWNER_ = #{orQueryObject.involvedUser}
+              or
+                (
+                  exists(select LINK.USER_ID_ from ${prefix}ACT_RU_IDENTITYLINK LINK where USER_ID_ =
+                  #{orQueryObject.involvedUser} and LINK.TASK_ID_ = RES.ID_)
+                  or RES.ASSIGNEE_ = #{orQueryObject.involvedUser}
+                  or RES.OWNER_ = #{orQueryObject.involvedUser}
                 )
+            </if>
+            <if test="orQueryObject.involvedGroups != null &amp;&amp; orQueryObject.involvedGroups.size() &gt; 0">
+              or (
+                I_OR${orIndex}.TYPE_ = 'participant'
+                and
+                I_OR${orIndex}.GROUP_ID_ IN
+                <foreach item="group" index="index" collection="orQueryObject.involvedGroups" open="(" separator="," close=")">
+                  #{group}
+                </foreach>
+              )
             </if>
             <foreach item="var" collection="orQueryObject.queryVariableValues" index="index">
               or 
               <trim prefix="(" prefixOverrides="AND" suffix=")">
-              <if test="!var.local">
-                <!-- When process instance variable is queried for, taskId should be null -->
-                and A_OR${orIndex}_${index}.TASK_ID_ is null
-              </if>
+              <choose>
+                <when test="!var.local">
+                  <bind name="orLocal" value="''" />
+                  <!-- When process instance variable is queried for, taskId should be null -->
+                  and A_OR${orIndex}.TASK_ID_ is null
+                </when>
+                <otherwise>
+                  <bind name="orLocal" value="'L_'" />
+                </otherwise>
+              </choose>
               <if test="var.name != null">
                 <!-- Match-all variable-names when name is null -->
-                and A_OR${orIndex}_${index}.NAME_= #{var.name}
+                and A_${orLocal}OR${orIndex}.NAME_= #{var.name}
               </if>
               <if test="var.name == null">
-          		and A_OR${orIndex}_${index}.NAME_ is not null
+                and A_${orLocal}OR${orIndex}.NAME_ is not null
         	  </if>
               <if test="!var.type.equals('null')">
-                and A_OR${orIndex}_${index}.TYPE_ = #{var.type}
+                and A_${orLocal}OR${orIndex}.TYPE_ = #{var.type}
               </if>
               <!-- Variable value -->
               <if test="var.textValue != null &amp;&amp; var.longValue == null &amp;&amp; var.doubleValue == null">
                 <choose>
                   <when test="var.operator.equals('EQUALS_IGNORE_CASE') || var.operator.equals('NOT_EQUALS_IGNORE_CASE') || var.operator.equals('LIKE_IGNORE_CASE')">
-                    and lower(A_OR${orIndex}_${index}.TEXT_)
+                    and lower(A_${orLocal}OR${orIndex}.TEXT_)
                   </when>
                   <otherwise>
-                    and A_OR${orIndex}_${index}.TEXT_
+                    and A_${orLocal}OR${orIndex}.TEXT_
                   </otherwise>
                 </choose> 
                 <choose>
@@ -950,7 +978,7 @@
                 </choose>
               </if>
               <if test="var.textValue2 != null">
-                and A_OR${orIndex}_${index}.TEXT2_ 
+                and A_${orLocal}OR${orIndex}.TEXT2_
                 <choose>
                   <when test="var.operator.equals('LIKE')">LIKE</when>
                   <otherwise><include refid="executionVariableOperator" /></otherwise>
@@ -961,12 +989,12 @@
                 </choose>
               </if>
               <if test="var.longValue != null">
-                and A_OR${orIndex}_${index}.LONG_
+                and A_${orLocal}OR${orIndex}.LONG_
                 <include refid="executionVariableOperator" />
                 #{var.longValue}
               </if>
               <if test="var.doubleValue != null">
-                and A_OR${orIndex}_${index}.DOUBLE_ 
+                and A_${orLocal}OR${orIndex}.DOUBLE_
                 <include refid="executionVariableOperator" />
                 #{var.doubleValue}
               </if>
@@ -974,10 +1002,10 @@
               <if test="var.textValue == null &amp;&amp; var.textValue2 == null &amp;&amp; var.longValue == null &amp;&amp; var.doubleValue == null">
                 <choose>
                   <when test="var.operator.equals('NOT_EQUALS')">
-                    and (A_OR${orIndex}_${index}.TEXT_ is not null or A_OR${orIndex}_${index}.TEXT2_ is not null or A_OR${orIndex}_${index}.LONG_ is not null or A_OR${orIndex}_${index}.DOUBLE_ is not null or A_OR${orIndex}_${index}.BYTEARRAY_ID_ is not null)
+                    and (A_${orLocal}OR${orIndex}.TEXT_ is not null or A_${orLocal}OR${orIndex}.TEXT2_ is not null or A_${orLocal}OR${orIndex}.LONG_ is not null or A_${orLocal}OR${orIndex}.DOUBLE_ is not null or A_${orLocal}OR${orIndex}.BYTEARRAY_ID_ is not null)
                   </when>
                   <otherwise>
-                    and A_OR${orIndex}_${index}.TEXT_ is null and A_OR${orIndex}_${index}.TEXT2_ is null and A_OR${orIndex}_${index}.LONG_ is null and A_OR${orIndex}_${index}.DOUBLE_ is null and A_OR${orIndex}_${index}.BYTEARRAY_ID_ is null
+                    and A_${orLocal}OR${orIndex}.TEXT_ is null and A_${orLocal}OR${orIndex}.TEXT2_ is null and A_${orLocal}OR${orIndex}.LONG_ is null and A_${orLocal}OR${orIndex}.DOUBLE_ is null and A_${orLocal}OR${orIndex}.BYTEARRAY_ID_ is null
                   </otherwise>
                 </choose>          
               </if>
